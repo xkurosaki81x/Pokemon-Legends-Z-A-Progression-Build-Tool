@@ -5,6 +5,7 @@ const CHECKS_KEY = "za_checks";
 
 let DATA = null;
 let activeTab = "roadmap";
+let activePhase = 1;
 let tmSearch = "";
 let tmMethod = "all";
 let tmSort = "number";
@@ -44,12 +45,70 @@ function getAllRows() {
   );
 }
 
+/* PHASE NAVIGATION */
+
+function renderPhaseTabs() {
+  const root = $("#phaseTabs");
+  if (!root) return;
+
+  root.innerHTML = DATA.phases.map((phase) => `
+    <button
+      class="phase-tab ${phase.id === activePhase ? "active" : ""}"
+      type="button"
+      data-phase="${phase.id}"
+      aria-pressed="${phase.id === activePhase}"
+    >
+      <span class="phase-tab-number">PHASE ${phase.id}</span>
+      <span class="phase-tab-name">${escapeHTML(phase.name)}</span>
+    </button>
+  `).join("");
+
+  root.querySelectorAll("[data-phase]").forEach((button) => {
+    button.addEventListener("click", () => {
+      selectPhase(Number(button.dataset.phase));
+    });
+  });
+}
+
+function selectPhase(phaseId) {
+  activePhase = phaseId;
+
+  document.querySelectorAll(".phase-tab").forEach((button) => {
+    const selected = Number(button.dataset.phase) === phaseId;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+
+  document.querySelectorAll(".phase-card").forEach((card) => {
+    card.hidden = Number(card.dataset.phaseId) !== phaseId;
+  });
+
+  const selectedTab = document.querySelector(
+    `.phase-tab[data-phase="${phaseId}"]`
+  );
+
+  if (selectedTab) {
+    selectedTab.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest"
+    });
+  }
+}
+
+/* ROADMAP */
+
 function renderPhases() {
   const root = $("#phaseList");
   if (!root) return;
 
   root.innerHTML = DATA.phases.map((phase) => `
-    <section class="phase-card" id="phase-${phase.id}">
+    <section
+      class="phase-card"
+      id="phase-${phase.id}"
+      data-phase-id="${phase.id}"
+      ${phase.id !== activePhase ? "hidden" : ""}
+    >
       <div class="phase-heading">
         <div>
           <p class="eyebrow">PHASE ${phase.id}</p>
@@ -57,6 +116,7 @@ function renderPhases() {
         </div>
         <span class="phase-count">${phase.rows.length} entries</span>
       </div>
+
       <div class="table-wrap">
         <table class="phase-table">
           <thead>
@@ -85,12 +145,18 @@ function renderPhases() {
       </div>
     </section>
   `).join("");
+
+  renderPhaseTabs();
+  selectPhase(activePhase);
 }
+
+/* TM CATALOGUE */
 
 function getResearchLevel(tmNumber) {
   const reward = DATA.tmCatalogue.researchRewards.find(
     (entry) => entry.tm === tmNumber
   );
+
   return reward ? reward.level : null;
 }
 
@@ -102,10 +168,10 @@ function getTMAvailability(tm) {
 
   const missionMatch = tm.method.match(/after Main Mission (\d+)/i);
   if (missionMatch) return `After Mission ${missionMatch[1]}`;
-
   if (tm.method.includes("postgame")) return "Postgame";
   if (tm.method.includes("Side Mission")) return "Side Mission";
   if (tm.method.includes("Defeat")) return "Battle reward";
+
   return "World pickup";
 }
 
@@ -118,6 +184,7 @@ function renderTMCatalogue() {
 
   if (tmSearch.trim()) {
     const query = tmSearch.trim().toLowerCase();
+
     tms = tms.filter((tm) =>
       String(tm.number).padStart(3, "0").includes(query) ||
       tm.name.toLowerCase().includes(query) ||
@@ -146,10 +213,14 @@ function renderTMCatalogue() {
     tms.sort((a, b) => a.number - b.number);
   }
 
-  if (count) count.textContent = `${tms.length} of ${DATA.tmCatalogue.tms.length} TMs`;
+  if (count) {
+    count.textContent =
+      `${tms.length} of ${DATA.tmCatalogue.tms.length} TMs`;
+  }
 
   if (!tms.length) {
-    root.innerHTML = `<div class="empty-state">No TMs match your search.</div>`;
+    root.innerHTML =
+      `<div class="empty-state">No TMs match your search.</div>`;
     return;
   }
 
@@ -160,11 +231,13 @@ function renderTMCatalogue() {
     return `
       <article class="tm-card">
         <div class="tm-number">TM${number}</div>
+
         <div class="tm-main">
           <h3>${escapeHTML(tm.name)}</h3>
           <p class="tm-location">${escapeHTML(tm.location)}</p>
           <p class="tm-method">${escapeHTML(tm.method)}</p>
         </div>
+
         <div class="tm-unlock">
           ${researchLevel
             ? `<span class="unlock-tag">Research Lv. ${researchLevel}</span>`
@@ -183,15 +256,23 @@ function renderResearchRewards() {
     .slice()
     .sort((a, b) => a.level - b.level)
     .map((reward) => {
-      const tm = DATA.tmCatalogue.tms.find((entry) => entry.number === reward.tm);
+      const tm = DATA.tmCatalogue.tms.find(
+        (entry) => entry.number === reward.tm
+      );
+
       return `
         <div class="research-row">
           <span>Research Level ${reward.level}</span>
-          <strong>TM${String(reward.tm).padStart(3, "0")} — ${escapeHTML(tm?.name || "Unknown TM")}</strong>
+          <strong>
+            TM${String(reward.tm).padStart(3, "0")} —
+            ${escapeHTML(tm?.name || "Unknown TM")}
+          </strong>
         </div>
       `;
     }).join("");
 }
+
+/* PROGRESS TRACKER */
 
 function renderChecks() {
   const root = $("#progressList");
@@ -201,10 +282,14 @@ function renderChecks() {
   const rows = getAllRows();
 
   root.innerHTML = DATA.phases.map((phase) => {
-    const phaseRows = rows.filter((row) => row.phaseId === phase.id);
+    const phaseRows = rows.filter(
+      (row) => row.phaseId === phase.id
+    );
+
     return `
       <section class="progress-phase">
         <h3>Phase ${phase.id}: ${escapeHTML(phase.name)}</h3>
+
         ${phaseRows.map((row) => `
           <label class="progress-item">
             <input
@@ -223,6 +308,7 @@ function renderChecks() {
     input.addEventListener("change", () => {
       const updated = readChecks();
       updated[input.dataset.checkId] = input.checked;
+
       saveChecks(updated);
       updateProgressSummary();
     });
@@ -234,18 +320,29 @@ function renderChecks() {
 function updateProgressSummary() {
   const checks = readChecks();
   const rows = getAllRows();
-  const completed = rows.filter((row) => checks[row.rowId]).length;
+
+  const completed = rows.filter(
+    (row) => checks[row.rowId]
+  ).length;
+
   const total = rows.length;
-  const percent = total ? Math.round((completed / total) * 100) : 0;
+  const percent = total
+    ? Math.round((completed / total) * 100)
+    : 0;
 
   const count = $("#progressCount");
   const bar = $("#progressBar");
   const percentLabel = $("#progressPercent");
 
-  if (count) count.textContent = `${completed} / ${total} entries completed`;
+  if (count) {
+    count.textContent = `${completed} / ${total} entries completed`;
+  }
+
   if (bar) bar.style.width = `${percent}%`;
   if (percentLabel) percentLabel.textContent = `${percent}%`;
 }
+
+/* MAIN NAVIGATION */
 
 function wireTabs() {
   document.querySelectorAll("[data-tab]").forEach((button) => {
@@ -265,6 +362,8 @@ function wireTabs() {
     });
   });
 }
+
+/* TM CONTROLS */
 
 function wireTMControls() {
   const search = $("#tmSearch");
@@ -293,6 +392,8 @@ function wireTMControls() {
   }
 }
 
+/* PROGRESS CONTROLS */
+
 function wireProgressControls() {
   const reset = $("#resetProgress");
   if (!reset) return;
@@ -301,12 +402,15 @@ function wireProgressControls() {
     const confirmed = window.confirm(
       "Reset all roadmap progress? This cannot be undone."
     );
+
     if (!confirmed) return;
 
     localStorage.removeItem(CHECKS_KEY);
     renderChecks();
   });
 }
+
+/* GUIDE NOTES */
 
 function renderGuideNotes() {
   const root = $("#guideNotes");
@@ -317,18 +421,22 @@ function renderGuideNotes() {
       <h3>How to use the roadmap</h3>
       <p>Follow the phases in mission order. A Pokémon, move, or held item should only be added to your active plan after its listed encounter, evolution, mission, or Research Level requirement has been met.</p>
     </section>
+
     <section class="note-card">
       <h3>Research Level</h3>
       <p>Research Level rewards depend on completing available research tasks. Treat the listed level as the unlock requirement for that specific reward, not as a mandatory target for every phase.</p>
     </section>
+
     <section class="note-card">
       <h3>TM Catalogue</h3>
       <p>The catalogue covers base-game TM001–TM107. TMs are reusable. The location and unlock method describe where each TM is obtained; they do not guarantee compatibility with every Pokémon.</p>
     </section>
+
     <section class="note-card">
       <h3>DLC content</h3>
       <p>Mega Dimension content is kept in Phase 8. DLC Pokémon, forms, stones, orbs, and TMs should only be added after their corresponding mission or reward becomes available.</p>
     </section>
+
     <section class="note-card">
       <h3>Verification status</h3>
       <p>Some encounter, held-item, Mega Stone, move, and DLC details remain under verification. Check the audit status in the data file before treating an entry as final.</p>
@@ -336,12 +444,23 @@ function renderGuideNotes() {
   `;
 }
 
+/* INITIALIZATION */
+
 async function init() {
   try {
     const response = await fetch(DATA_URL, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Could not load data.json (${response.status})`);
+
+    if (!response.ok) {
+      throw new Error(`Could not load data.json (${response.status})`);
+    }
 
     DATA = await response.json();
+
+    if (!Array.isArray(DATA.phases) || !DATA.phases.length) {
+      throw new Error("The phase data is missing or invalid.");
+    }
+
+    activePhase = DATA.phases[0].id;
 
     renderPhases();
     renderTMCatalogue();
@@ -354,13 +473,19 @@ async function init() {
     wireProgressControls();
 
     const year = $("#footerYear");
-    if (year) year.textContent = new Date().getFullYear();
+    if (year) {
+      year.textContent = new Date().getFullYear();
+    }
+
   } catch (error) {
     console.error(error);
+
     const root = $("#appError");
+
     if (root) {
       root.hidden = false;
-      root.textContent = `The roadmap could not load. Check that data.json is valid JSON and is in the same folder as app.js. Details: ${error.message}`;
+      root.textContent =
+        `The roadmap could not load. Check that data.json is valid JSON and is in the same folder as app.js. Details: ${error.message}`;
     }
   }
 }
