@@ -1,53 +1,660 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#172554"><meta name="description" content="Offline Pokémon Legends: Z-A progression companion">
-<link rel="manifest" href="manifest.webmanifest">
-<title>Pokémon Z-A Companion</title>
-<style>
-:root{--bg:#f3f6fb;--card:#fff;--ink:#172033;--muted:#64748b;--line:#dce4ef;--blue:#2457a7;--nav:#172554;--green:#16835d}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
-header{background:linear-gradient(135deg,#172554,#2457a7);color:white;padding:22px 16px 18px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #10204433}
-h1{font-size:21px;margin:0 0 4px}.sub{opacity:.85;font-size:13px}.wrap{max-width:1100px;margin:auto;padding:14px}
-nav{display:flex;gap:8px;overflow:auto;padding:10px 0;position:sticky;top:89px;background:var(--bg);z-index:4}
-nav button,.phasebtn{border:1px solid var(--line);background:white;border-radius:999px;padding:9px 13px;white-space:nowrap;color:var(--ink);font-weight:650}
-nav button.active,.phasebtn.active{background:var(--nav);color:white;border-color:var(--nav)}
-.panel,.phasehead,.pokemon-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 8px #1725540a}
-h2{font-size:19px;margin:0 0 7px}h3{font-size:16px;margin:0 0 5px}.muted{color:var(--muted)}.pill{display:inline-block;background:#e9f0fb;color:#244d8b;border-radius:99px;padding:3px 8px;font-size:12px;font-weight:700;margin:3px 4px 3px 0}
-.phasebar{display:flex;gap:7px;overflow:auto;padding:5px 0 10px}.phasehead p{margin:6px 0}
-table{width:100%;border-collapse:collapse;min-width:950px;font-size:13px}th{background:#eaf0f8;text-align:left;color:#1f365c;position:sticky;top:0}td,th{padding:10px;border:1px solid var(--line);vertical-align:top}td:first-child{font-weight:700}
-.tablewrap{overflow:auto;border-radius:12px;border:1px solid var(--line);background:white}
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
-.pokemon-card{margin:0;text-align:center}.pokemon-card img{width:100%;height:125px;object-fit:contain}.pokemon-card strong{display:block}
-input[type=checkbox]{accent-color:var(--green);width:18px;height:18px;vertical-align:middle}
-.progress{height:9px;background:#e4eaf2;border-radius:9px;overflow:hidden}.progress span{display:block;height:100%;background:var(--green);width:0}
-.small{font-size:12px}.hidden{display:none!important}.notice{border-left:4px solid #d18b23;background:#fff8e9;padding:11px;border-radius:8px;margin:10px 0}
-footer{padding:20px 4px;color:var(--muted);font-size:12px}
-@media(max-width:650px){header{padding:17px 14px}.wrap{padding:10px}nav{top:79px}.phasehead{padding:12px}}
-</style></head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="Pokémon Legends: Z-A progression roadmap, TM catalogue, and team tracker.">
+  <title>Pokémon Legends: Z-A Progression Tool</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #101820;
+      --surface: #18242e;
+      --surface-2: #202f3b;
+      --border: #344653;
+      --text: #edf3f6;
+      --muted: #a9bac5;
+      --accent: #55c5b2;
+      --accent-dark: #193f3c;
+      --warning: #e5bd6a;
+      --radius: 13px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app-header {
+      padding: 28px 18px 22px;
+      background: linear-gradient(135deg, #182b38, #17232c);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner,
+    main,
+    .footer-inner {
+      width: min(1440px, calc(100% - 28px));
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 5px;
+      color: var(--accent);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 4vw, 2.3rem);
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 10px max(14px, calc((100% - 1440px) / 2));
+      background: rgba(16, 24, 32, .96);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+    }
+
+    .tab-button {
+      flex: 0 0 auto;
+      padding: 10px 15px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .tab-button:hover {
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .tab-button.active {
+      border-color: var(--accent);
+      background: var(--accent-dark);
+      color: #bff8eb;
+    }
+
+    main {
+      min-height: 65vh;
+      padding: 25px 0 55px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .section-intro {
+      margin-bottom: 20px;
+    }
+
+    .section-intro h2 {
+      margin: 0;
+      font-size: 1.55rem;
+    }
+
+    .section-intro p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .phase-card {
+      margin: 0 0 22px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .phase-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 17px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-heading .eyebrow {
+      margin-bottom: 2px;
+    }
+
+    .phase-heading h2 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .phase-count {
+      flex: 0 0 auto;
+      padding: 5px 9px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .phase-table {
+      width: 100%;
+      min-width: 1050px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .phase-table th,
+    .phase-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .phase-table th {
+      background: var(--surface-2);
+      color: #c5d5dd;
+      font-size: .76rem;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .phase-table td {
+      color: #dbe5ea;
+      font-size: .88rem;
+      min-width: 145px;
+    }
+
+    .phase-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .phase-table .pokemon-cell {
+      min-width: 150px;
+      color: #baf2e6;
+      font-weight: 800;
+    }
+
+    .catalogue-controls {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) minmax(130px, 180px);
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .control {
+      width: 100%;
+      min-height: 45px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      outline: none;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .control:focus {
+      border-color: var(--accent);
+    }
+
+    .catalogue-meta {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .tm-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .tm-card {
+      display: grid;
+      grid-template-columns: 65px minmax(0, 1fr);
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      background: var(--surface);
+    }
+
+    .tm-number {
+      display: grid;
+      place-items: center;
+      align-self: start;
+      min-height: 42px;
+      border-radius: 8px;
+      background: var(--accent-dark);
+      color: #bff8eb;
+      font-weight: 850;
+      font-size: .88rem;
+    }
+
+    .tm-main {
+      min-width: 0;
+    }
+
+    .tm-main h3 {
+      margin: 0 0 3px;
+      font-size: 1rem;
+    }
+
+    .tm-location,
+    .tm-method {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: .83rem;
+      overflow-wrap: anywhere;
+    }
+
+    .tm-method {
+      color: #c8d7df;
+    }
+
+    .tm-unlock {
+      grid-column: 2;
+    }
+
+    .unlock-tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border: 1px solid #42665f;
+      border-radius: 6px;
+      background: #1b3533;
+      color: #baf2e6;
+      font-size: .74rem;
+      font-weight: 700;
+    }
+
+    .subsection-title {
+      margin: 30px 0 12px;
+      font-size: 1.2rem;
+    }
+
+    .research-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .research-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 11px 13px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface);
+      font-size: .84rem;
+    }
+
+    .research-row span {
+      flex: 0 0 auto;
+      color: var(--accent);
+      font-weight: 750;
+    }
+
+    .research-row strong {
+      text-align: right;
+      font-weight: 650;
+    }
+
+    .progress-summary {
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .progress-summary-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    #progressCount {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    #progressPercent {
+      color: var(--accent);
+      font-weight: 850;
+    }
+
+    .progress-track {
+      height: 11px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #0c1319;
+    }
+
+    #progressBar {
+      width: 0;
+      height: 100%;
+      border-radius: inherit;
+      background: var(--accent);
+      transition: width .2s ease;
+    }
+
+    .progress-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin: 12px 0 20px;
+    }
+
+    .secondary-button {
+      padding: 9px 13px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-2);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .secondary-button:hover {
+      border-color: var(--warning);
+    }
+
+    .progress-phase {
+      margin: 0 0 15px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .progress-phase h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .progress-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+      color: #dbe5ea;
+      cursor: pointer;
+    }
+
+    .progress-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .progress-item input:checked + span {
+      color: #8ea39e;
+      text-decoration: line-through;
+    }
+
+    .note-card {
+      margin: 0 0 12px;
+      padding: 17px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+    }
+
+    .note-card h3 {
+      margin: 0 0 6px;
+      font-size: 1rem;
+    }
+
+    .note-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 25px;
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .error-message {
+      margin: 15px 0;
+      padding: 14px;
+      border: 1px solid #9b5555;
+      border-radius: 9px;
+      background: #3a2024;
+      color: #ffd5d5;
+      overflow-wrap: anywhere;
+    }
+
+    footer {
+      padding: 20px 14px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      text-align: center;
+      font-size: .8rem;
+    }
+
+    @media (max-width: 760px) {
+      .catalogue-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .tm-list,
+      .research-list {
+        grid-template-columns: 1fr;
+      }
+
+      .phase-heading {
+        align-items: flex-start;
+      }
+
+      .phase-count {
+        margin-top: 5px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .header-inner,
+      main,
+      .footer-inner {
+        width: min(100% - 20px, 1440px);
+      }
+
+      .app-header {
+        padding: 23px 10px 18px;
+      }
+
+      .tab-button {
+        padding: 9px 12px;
+        font-size: .85rem;
+      }
+
+      .tm-card {
+        grid-template-columns: 56px minmax(0, 1fr);
+        padding: 11px;
+      }
+
+      .research-row {
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .research-row strong {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+
 <body>
-<header><h1>Pokémon Z-A Companion</h1><div class="sub">Totodile start · Mega-focused · Main story, postgame & Mega Dimension</div></header>
-<div class="wrap">
-<nav id="tabs"><button class="active" data-tab="roadmap">Roadmap</button><button data-tab="pokedex">Pokémon</button><button data-tab="tracker">Progress</button><button data-tab="notes">Guide notes</button></nav>
-<section id="roadmap">
-<div class="panel"><h2>Your progression roadmap</h2><div class="muted small">Choose a phase to view its recommended roster, move progression and held-item sources in one consistent table.</div><div class="phasebar" id="phasebar"></div></div>
-<div id="phasecontent"></div>
-</section>
-<section id="pokedex" class="hidden"><div class="panel"><h2>Recommended Pokémon gallery</h2><p class="muted small">Artwork loads online on first use and is cached for offline viewing after it has been loaded.</p><div class="cards" id="gallery"></div></div></section>
-<section id="tracker" class="hidden"><div class="panel"><h2>Progress tracker</h2><p class="muted">Your checkmarks are saved on this device.</p><div id="overall"></div><div id="checks"></div><button id="reset" style="margin-top:12px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:white">Reset all checkmarks</button></div></section>
-<section id="notes" class="hidden"><div class="panel"><h2>Important guide notes</h2>
-<div class="notice"><b>Accuracy note:</b> This first app build organizes the current roadmap into an interactive offline-capable shell. Some encounter timing, DLC roster details, exact move compatibility and late-game item sources still require in-game/source verification. Where not confirmed, the table explicitly says to verify rather than invent a location or unlock.</div>
-<ul>
-<li>Research Level 14 is not a mandatory Phase 1 target. Follow the tasks actually unlocked and available to you.</li>
-<li>Only one Quick Claw gift is confirmed from the Vert Sector 2 stall NPC. Do not plan around receiving three.</li>
-<li>Side Mission 20 gives Oran Berry ×10; Side Mission 21 gives one Wise Glasses; Side Mission 23 gives Soft Sand.</li>
-<li>A Mega Stone occupies the held-item slot. A Pokémon cannot hold a Mega Stone and a second held item simultaneously.</li>
-<li>Feraligatr's recommended Water attack is Liquidation/Waterfall when available; Waterfall is not assumed to be a level-up move.</li>
-<li>Do not assume Dragon Dance is Dragonite's Z-A level-up move. Confirm moves in the in-game move menu.</li>
-</ul>
-<p class="small muted">Image source: PokeAPI official-artwork sprite repository. This is an unofficial fan-made companion and is not affiliated with Nintendo, The Pokémon Company, Game Freak or PokeAPI.</p></div></section>
-<footer>Offline use: open this app once while online so the service worker can cache the interface and loaded artwork. Installability requires HTTPS hosting (or localhost). Your progress stays in this browser's local storage.</footer>
-</div>
-<script src="app.js"></script>
-</body></html>
+  <header class="app-header">
+    <div class="header-inner">
+      <p class="eyebrow">Pokémon Legends: Z-A</p>
+      <h1>Progression Roadmap</h1>
+      <p class="subtitle">
+        Follow the team's progression, check when moves and items become
+        available, and track your progress through the main game and DLC.
+      </p>
+    </div>
+  </header>
+
+  <nav class="tab-bar" aria-label="Main navigation">
+    <button class="tab-button active" type="button" data-tab="roadmap">Roadmap</button>
+    <button class="tab-button" type="button" data-tab="catalogue">TM Catalogue</button>
+    <button class="tab-button" type="button" data-tab="progress">Progress</button>
+    <button class="tab-button" type="button" data-tab="notes">Guide Notes</button>
+  </nav>
+
+  <main>
+    <div id="appError" class="error-message" role="alert" hidden></div>
+
+    <section data-panel="roadmap">
+      <div class="section-intro">
+        <h2>Team Roadmap</h2>
+        <p>
+          Pokémon, moves, and held items are arranged by the phase in which
+          they are recommended for use.
+        </p>
+      </div>
+      <div id="phaseList"></div>
+    </section>
+
+    <section data-panel="catalogue" hidden>
+      <div class="section-intro">
+        <h2>Base-Game TM Catalogue</h2>
+        <p>
+          Search TM001–TM107 by number, move name, location, or acquisition
+          requirement. DLC TMs are listed separately from this catalogue.
+        </p>
+      </div>
+
+      <div class="catalogue-controls">
+        <input
+          class="control"
+          id="tmSearch"
+          type="search"
+          placeholder="Search TM number, move, or location..."
+          autocomplete="off"
+        >
+
+        <select class="control" id="tmMethod" aria-label="Filter by acquisition method">
+          <option value="all">All acquisition methods</option>
+          <option value="research">Mable Research rewards</option>
+          <option value="mission">Mission rewards</option>
+          <option value="pickup">World pickups</option>
+        </select>
+
+        <select class="control" id="tmSort" aria-label="Sort TMs">
+          <option value="number">Sort by TM number</option>
+          <option value="name">Sort by move name</option>
+        </select>
+      </div>
+
+      <p class="catalogue-meta" id="tmCount">Loading TMs...</p>
+      <div class="tm-list" id="tmList"></div>
+
+      <h3 class="subsection-title">Mable Research TM Rewards</h3>
+      <p class="catalogue-meta">
+        These are the Research Level requirements for the corresponding TM rewards.
+      </p>
+      <div class="research-list" id="researchRewards"></div>
+    </section>
+
+    <section data-panel="progress" hidden>
+      <div class="section-intro">
+        <h2>Progress Tracker</h2>
+        <p>
+          Mark each roadmap entry as completed. Your checklist is saved
+          locally on this device.
+        </p>
+      </div>
+
+      <div class="progress-summary">
+        <div class="progress-summary-top">
+          <span id="progressCount">0 entries completed</span>
+          <strong id="progressPercent">0%</strong>
+        </div>
+        <div
+          class="progress-track"
+          role="progressbar"
+          aria-label="Roadmap completion"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        >
+          <div id="progressBar"></div>
+        </div>
+      </div>
+
+      <div class="progress-actions">
+        <button class="secondary-button" id="resetProgress" type="button">
+          Reset Progress
+        </button>
+      </div>
+
+      <div id="progressList"></div>
+    </section>
+
+    <section data-panel="notes" hidden>
+      <div class="section-intro">
+        <h2>Guide Notes</h2>
+        <p>Important rules for interpreting the roadmap and catalogue.</p>
+      </div>
+      <div id="guideNotes"></div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      Pokémon Legends: Z-A Progression Tool · <span id="footerYear"></span>
+    </div>
+  </footer>
+
+  <script src="./app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          console.error("Service worker registration failed:", error);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
