@@ -1,12 +1,12 @@
-
-const CACHE = "za-companion-v2";
+const CACHE = "za-companion-v3";
 const CORE = [
   "./",
   "./index.html",
   "./app.js",
   "./data.json",
   "./manifest.webmanifest",
-  "./icon.svg"
+  "./icon-192.png",
+  "./icon-512.png"
 ];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
