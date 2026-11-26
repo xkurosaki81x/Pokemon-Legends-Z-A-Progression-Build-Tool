@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#172554"><meta name="description" content="Offline Pokémon Legends: Z-A progression companion">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Pokémon Z-A Companion</title>
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#172033;--muted:#64748b;--line:#dce4ef;--blue:#2457a7;--nav:#172554;--green:#16835d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:linear-gradient(135deg,#172554,#2457a7);color:white;padding:22px 16px 18px;position:sticky;top:0;z-index:5;box-shadow:0 3px 12px #10204433}
+h1{font-size:21px;margin:0 0 4px}.sub{opacity:.85;font-size:13px}.wrap{max-width:1100px;margin:auto;padding:14px}
+nav{display:flex;gap:8px;overflow:auto;padding:10px 0;position:sticky;top:89px;background:var(--bg);z-index:4}
+nav button,.phasebtn{border:1px solid var(--line);background:white;border-radius:999px;padding:9px 13px;white-space:nowrap;color:var(--ink);font-weight:650}
+nav button.active,.phasebtn.active{background:var(--nav);color:white;border-color:var(--nav)}
+.panel,.phasehead,.pokemon-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 2px 8px #1725540a}
+h2{font-size:19px;margin:0 0 7px}h3{font-size:16px;margin:0 0 5px}.muted{color:var(--muted)}.pill{display:inline-block;background:#e9f0fb;color:#244d8b;border-radius:99px;padding:3px 8px;font-size:12px;font-weight:700;margin:3px 4px 3px 0}
+.phasebar{display:flex;gap:7px;overflow:auto;padding:5px 0 10px}.phasehead p{margin:6px 0}
+table{width:100%;border-collapse:collapse;min-width:950px;font-size:13px}th{background:#eaf0f8;text-align:left;color:#1f365c;position:sticky;top:0}td,th{padding:10px;border:1px solid var(--line);vertical-align:top}td:first-child{font-weight:700}
+.tablewrap{overflow:auto;border-radius:12px;border:1px solid var(--line);background:white}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+.pokemon-card{margin:0;text-align:center}.pokemon-card img{width:100%;height:125px;object-fit:contain}.pokemon-card strong{display:block}
+input[type=checkbox]{accent-color:var(--green);width:18px;height:18px;vertical-align:middle}
+.progress{height:9px;background:#e4eaf2;border-radius:9px;overflow:hidden}.progress span{display:block;height:100%;background:var(--green);width:0}
+.small{font-size:12px}.hidden{display:none!important}.notice{border-left:4px solid #d18b23;background:#fff8e9;padding:11px;border-radius:8px;margin:10px 0}
+footer{padding:20px 4px;color:var(--muted);font-size:12px}
+@media(max-width:650px){header{padding:17px 14px}.wrap{padding:10px}nav{top:79px}.phasehead{padding:12px}}
+</style></head>
+<body>
+<header><h1>Pokémon Z-A Companion</h1><div class="sub">Totodile start · Mega-focused · Main story, postgame & Mega Dimension</div></header>
+<div class="wrap">
+<nav id="tabs"><button class="active" data-tab="roadmap">Roadmap</button><button data-tab="pokedex">Pokémon</button><button data-tab="tracker">Progress</button><button data-tab="notes">Guide notes</button></nav>
+<section id="roadmap">
+<div class="panel"><h2>Your progression roadmap</h2><div class="muted small">Choose a phase to view its recommended roster, move progression and held-item sources in one consistent table.</div><div class="phasebar" id="phasebar"></div></div>
+<div id="phasecontent"></div>
+</section>
+<section id="pokedex" class="hidden"><div class="panel"><h2>Recommended Pokémon gallery</h2><p class="muted small">Artwork loads online on first use and is cached for offline viewing after it has been loaded.</p><div class="cards" id="gallery"></div></div></section>
+<section id="tracker" class="hidden"><div class="panel"><h2>Progress tracker</h2><p class="muted">Your checkmarks are saved on this device.</p><div id="overall"></div><div id="checks"></div><button id="reset" style="margin-top:12px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:white">Reset all checkmarks</button></div></section>
+<section id="notes" class="hidden"><div class="panel"><h2>Important guide notes</h2>
+<div class="notice"><b>Accuracy note:</b> This first app build organizes the current roadmap into an interactive offline-capable shell. Some encounter timing, DLC roster details, exact move compatibility and late-game item sources still require in-game/source verification. Where not confirmed, the table explicitly says to verify rather than invent a location or unlock.</div>
+<ul>
+<li>Research Level 14 is not a mandatory Phase 1 target. Follow the tasks actually unlocked and available to you.</li>
+<li>Only one Quick Claw gift is confirmed from the Vert Sector 2 stall NPC. Do not plan around receiving three.</li>
+<li>Side Mission 20 gives Oran Berry ×10; Side Mission 21 gives one Wise Glasses; Side Mission 23 gives Soft Sand.</li>
+<li>A Mega Stone occupies the held-item slot. A Pokémon cannot hold a Mega Stone and a second held item simultaneously.</li>
+<li>Feraligatr's recommended Water attack is Liquidation/Waterfall when available; Waterfall is not assumed to be a level-up move.</li>
+<li>Do not assume Dragon Dance is Dragonite's Z-A level-up move. Confirm moves in the in-game move menu.</li>
+</ul>
+<p class="small muted">Image source: PokeAPI official-artwork sprite repository. This is an unofficial fan-made companion and is not affiliated with Nintendo, The Pokémon Company, Game Freak or PokeAPI.</p></div></section>
+<footer>Offline use: open this app once while online so the service worker can cache the interface and loaded artwork. Installability requires HTTPS hosting (or localhost). Your progress stays in this browser's local storage.</footer>
+</div>
+<script src="app.js"></script>
+</body></html>

@@ -1,0 +1,9 @@
+{
+  "name": "Pok\u00e9mon Z-A Companion",
+  "short_name": "Z-A Guide",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f6fb",
+  "theme_color": "#172554",
+  "description": "Offline progression guide and team tracker."
+}
