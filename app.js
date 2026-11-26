@@ -1,16 +1,368 @@
-let DATA, current=0, checks=JSON.parse(localStorage.getItem("za_checks")||"{}");
-const $=s=>document.querySelector(s);
-async function init(){const r=await fetch("data.json");DATA=await r.json();renderPhases();renderGallery();renderChecks();wireTabs();}
-function renderPhases(){
- const bar=$("#phasebar");bar.innerHTML="";
- DATA.phases.forEach((p,i)=>{let b=document.createElement("button");b.className="phasebtn"+(i===current?" active":"");b.textContent=`${i+1}. ${p.name.split("·")[0].trim()}`;b.onclick=()=>{current=i;renderPhases()};bar.append(b)});
- const p=DATA.phases[current];$("#phasecontent").innerHTML=`<div class="phasehead"><h2>${p.name}</h2><p>${p.goal}</p><span class="pill">Research target</span><p class="small">${p.research}</p></div><div class="tablewrap"><table><thead><tr><th>Pokémon</th><th>Where / How</th><th>Move Set</th><th>Where / How</th><th>Held Item</th><th>Where / How</th></tr></thead><tbody>${p.rows.map((r,i)=>`<tr>${r.map(x=>`<td>${esc(x)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+"use strict";
+
+const DATA_URL = "./data.json";
+const CHECKS_KEY = "za_checks";
+
+let DATA = null;
+let activeTab = "roadmap";
+let tmSearch = "";
+let tmMethod = "all";
+let tmSort = "number";
+
+const $ = (selector) => document.querySelector(selector);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[char]));
 }
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function renderGallery(){let names=Object.keys(DATA.images);$("#gallery").innerHTML=names.map(n=>`<article class="pokemon-card"><img loading="lazy" src="${DATA.images[n]}" alt="${n} artwork"><strong>${n}</strong><label class="small"><input type="checkbox" data-check="caught:${n}" ${checks["caught:"+n]?"checked":""}> Caught / obtained</label></article>`).join("");$("#gallery").querySelectorAll("input").forEach(wireCheck);}
-function allTasks(){let a=[];DATA.phases.forEach((p,i)=>{a.push({id:"phase:"+i,label:p.name+" reviewed"});p.rows.forEach((r,j)=>a.push({id:`row:${i}:${j}`,label:r[0]+" · "+p.name}))});return a;}
-function renderChecks(){let tasks=allTasks(),done=tasks.filter(t=>checks[t.id]).length,pct=Math.round(done/tasks.length*100);$("#overall").innerHTML=`<b>${done} / ${tasks.length} tracked items completed (${pct}%)</b><div class="progress"><span style="width:${pct}%"></span></div>`;$("#checks").innerHTML=DATA.phases.map((p,i)=>`<div class="panel"><h3>${p.name}</h3><label><input type="checkbox" data-check="phase:${i}" ${checks["phase:"+i]?"checked":""}> Phase reviewed</label>${p.rows.map((r,j)=>`<div style="padding:7px 0;border-top:1px solid var(--line)"><label><input type="checkbox" data-check="row:${i}:${j}" ${checks[`row:${i}:${j}`]?"checked":""}> ${esc(r[0])}</label></div>`).join("")}</div>`).join("");$("#checks").querySelectorAll("input").forEach(wireCheck);$("#gallery").querySelectorAll("input").forEach(wireCheck);}
-function wireCheck(el){el.onchange=()=>{checks[el.dataset.check]=el.checked;localStorage.setItem("za_checks",JSON.stringify(checks));renderChecks();}}
-function wireTabs(){document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x===b));["roadmap","pokedex","tracker","notes"].forEach(id=>$("#"+id).classList.toggle("hidden",id!==b.dataset.tab));});$("#reset").onclick=()=>{if(confirm("Clear all saved progress on this device?")){checks={};localStorage.removeItem("za_checks");renderChecks();renderGallery();}}}
-if("serviceWorker" in navigator && location.protocol.startsWith("http")) window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-init().catch(e=>{$("#phasecontent").textContent="Could not load roadmap data. Keep index.html and data.json in the same folder.";});
+
+function readChecks() {
+  try {
+    return JSON.parse(localStorage.getItem(CHECKS_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function saveChecks(checks) {
+  localStorage.setItem(CHECKS_KEY, JSON.stringify(checks));
+}
+
+function getAllRows() {
+  return DATA.phases.flatMap((phase) =>
+    phase.rows.map((row, index) => ({
+      ...row,
+      phaseId: phase.id,
+      phaseName: phase.name,
+      rowId: `p${phase.id}-r${index}`
+    }))
+  );
+}
+
+function renderPhases() {
+  const root = $("#phaseList");
+  if (!root) return;
+
+  root.innerHTML = DATA.phases.map((phase) => `
+    <section class="phase-card" id="phase-${phase.id}">
+      <div class="phase-heading">
+        <div>
+          <p class="eyebrow">PHASE ${phase.id}</p>
+          <h2>${escapeHTML(phase.name)}</h2>
+        </div>
+        <span class="phase-count">${phase.rows.length} entries</span>
+      </div>
+      <div class="table-wrap">
+        <table class="phase-table">
+          <thead>
+            <tr>
+              <th>Pokémon</th>
+              <th>Where / How</th>
+              <th>Move Set</th>
+              <th>Where / How</th>
+              <th>Held Item</th>
+              <th>Where / How</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${phase.rows.map((row) => `
+              <tr>
+                <td class="pokemon-cell">${escapeHTML(row.pokemon)}</td>
+                <td>${escapeHTML(row.where)}</td>
+                <td>${escapeHTML(row.moves)}</td>
+                <td>${escapeHTML(row.moveWhere)}</td>
+                <td>${escapeHTML(row.item)}</td>
+                <td>${escapeHTML(row.itemWhere)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  `).join("");
+}
+
+function getResearchLevel(tmNumber) {
+  const reward = DATA.tmCatalogue.researchRewards.find(
+    (entry) => entry.tm === tmNumber
+  );
+  return reward ? reward.level : null;
+}
+
+function getTMAvailability(tm) {
+  if (tm.method.includes("Research Level")) {
+    const level = getResearchLevel(tm.number);
+    return level ? `Research Level ${level}` : "Research reward";
+  }
+
+  const missionMatch = tm.method.match(/after Main Mission (\d+)/i);
+  if (missionMatch) return `After Mission ${missionMatch[1]}`;
+
+  if (tm.method.includes("postgame")) return "Postgame";
+  if (tm.method.includes("Side Mission")) return "Side Mission";
+  if (tm.method.includes("Defeat")) return "Battle reward";
+  return "World pickup";
+}
+
+function renderTMCatalogue() {
+  const root = $("#tmList");
+  const count = $("#tmCount");
+  if (!root) return;
+
+  let tms = [...DATA.tmCatalogue.tms];
+
+  if (tmSearch.trim()) {
+    const query = tmSearch.trim().toLowerCase();
+    tms = tms.filter((tm) =>
+      String(tm.number).padStart(3, "0").includes(query) ||
+      tm.name.toLowerCase().includes(query) ||
+      tm.location.toLowerCase().includes(query) ||
+      tm.method.toLowerCase().includes(query)
+    );
+  }
+
+  if (tmMethod === "research") {
+    tms = tms.filter((tm) => tm.method.includes("Research Level"));
+  } else if (tmMethod === "mission") {
+    tms = tms.filter((tm) =>
+      tm.method.includes("Mission") || tm.method.includes("Defeat")
+    );
+  } else if (tmMethod === "pickup") {
+    tms = tms.filter((tm) =>
+      !tm.method.includes("Research Level") &&
+      !tm.method.includes("Mission") &&
+      !tm.method.includes("Defeat")
+    );
+  }
+
+  if (tmSort === "name") {
+    tms.sort((a, b) => a.name.localeCompare(b.name));
+  } else {
+    tms.sort((a, b) => a.number - b.number);
+  }
+
+  if (count) count.textContent = `${tms.length} of ${DATA.tmCatalogue.tms.length} TMs`;
+
+  if (!tms.length) {
+    root.innerHTML = `<div class="empty-state">No TMs match your search.</div>`;
+    return;
+  }
+
+  root.innerHTML = tms.map((tm) => {
+    const number = String(tm.number).padStart(3, "0");
+    const researchLevel = getResearchLevel(tm.number);
+
+    return `
+      <article class="tm-card">
+        <div class="tm-number">TM${number}</div>
+        <div class="tm-main">
+          <h3>${escapeHTML(tm.name)}</h3>
+          <p class="tm-location">${escapeHTML(tm.location)}</p>
+          <p class="tm-method">${escapeHTML(tm.method)}</p>
+        </div>
+        <div class="tm-unlock">
+          ${researchLevel
+            ? `<span class="unlock-tag">Research Lv. ${researchLevel}</span>`
+            : `<span class="unlock-tag">${escapeHTML(getTMAvailability(tm))}</span>`}
+        </div>
+      </article>
+    `;
+  }).join("");
+}
+
+function renderResearchRewards() {
+  const root = $("#researchRewards");
+  if (!root) return;
+
+  root.innerHTML = DATA.tmCatalogue.researchRewards
+    .slice()
+    .sort((a, b) => a.level - b.level)
+    .map((reward) => {
+      const tm = DATA.tmCatalogue.tms.find((entry) => entry.number === reward.tm);
+      return `
+        <div class="research-row">
+          <span>Research Level ${reward.level}</span>
+          <strong>TM${String(reward.tm).padStart(3, "0")} — ${escapeHTML(tm?.name || "Unknown TM")}</strong>
+        </div>
+      `;
+    }).join("");
+}
+
+function renderChecks() {
+  const root = $("#progressList");
+  if (!root) return;
+
+  const checks = readChecks();
+  const rows = getAllRows();
+
+  root.innerHTML = DATA.phases.map((phase) => {
+    const phaseRows = rows.filter((row) => row.phaseId === phase.id);
+    return `
+      <section class="progress-phase">
+        <h3>Phase ${phase.id}: ${escapeHTML(phase.name)}</h3>
+        ${phaseRows.map((row) => `
+          <label class="progress-item">
+            <input
+              type="checkbox"
+              data-check-id="${row.rowId}"
+              ${checks[row.rowId] ? "checked" : ""}
+            >
+            <span>${escapeHTML(row.pokemon)}</span>
+          </label>
+        `).join("")}
+      </section>
+    `;
+  }).join("");
+
+  root.querySelectorAll("input[data-check-id]").forEach((input) => {
+    input.addEventListener("change", () => {
+      const updated = readChecks();
+      updated[input.dataset.checkId] = input.checked;
+      saveChecks(updated);
+      updateProgressSummary();
+    });
+  });
+
+  updateProgressSummary();
+}
+
+function updateProgressSummary() {
+  const checks = readChecks();
+  const rows = getAllRows();
+  const completed = rows.filter((row) => checks[row.rowId]).length;
+  const total = rows.length;
+  const percent = total ? Math.round((completed / total) * 100) : 0;
+
+  const count = $("#progressCount");
+  const bar = $("#progressBar");
+  const percentLabel = $("#progressPercent");
+
+  if (count) count.textContent = `${completed} / ${total} entries completed`;
+  if (bar) bar.style.width = `${percent}%`;
+  if (percentLabel) percentLabel.textContent = `${percent}%`;
+}
+
+function wireTabs() {
+  document.querySelectorAll("[data-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const tab = button.dataset.tab;
+      activeTab = tab;
+
+      document.querySelectorAll("[data-tab]").forEach((item) => {
+        item.classList.toggle("active", item.dataset.tab === tab);
+      });
+
+      document.querySelectorAll("[data-panel]").forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== tab;
+      });
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+function wireTMControls() {
+  const search = $("#tmSearch");
+  const method = $("#tmMethod");
+  const sort = $("#tmSort");
+
+  if (search) {
+    search.addEventListener("input", () => {
+      tmSearch = search.value;
+      renderTMCatalogue();
+    });
+  }
+
+  if (method) {
+    method.addEventListener("change", () => {
+      tmMethod = method.value;
+      renderTMCatalogue();
+    });
+  }
+
+  if (sort) {
+    sort.addEventListener("change", () => {
+      tmSort = sort.value;
+      renderTMCatalogue();
+    });
+  }
+}
+
+function wireProgressControls() {
+  const reset = $("#resetProgress");
+  if (!reset) return;
+
+  reset.addEventListener("click", () => {
+    const confirmed = window.confirm(
+      "Reset all roadmap progress? This cannot be undone."
+    );
+    if (!confirmed) return;
+
+    localStorage.removeItem(CHECKS_KEY);
+    renderChecks();
+  });
+}
+
+function renderGuideNotes() {
+  const root = $("#guideNotes");
+  if (!root) return;
+
+  root.innerHTML = `
+    <section class="note-card">
+      <h3>How to use the roadmap</h3>
+      <p>Follow the phases in mission order. A Pokémon, move, or held item should only be added to your active plan after its listed encounter, evolution, mission, or Research Level requirement has been met.</p>
+    </section>
+    <section class="note-card">
+      <h3>Research Level</h3>
+      <p>Research Level rewards depend on completing available research tasks. Treat the listed level as the unlock requirement for that specific reward, not as a mandatory target for every phase.</p>
+    </section>
+    <section class="note-card">
+      <h3>TM Catalogue</h3>
+      <p>The catalogue covers base-game TM001–TM107. TMs are reusable. The location and unlock method describe where each TM is obtained; they do not guarantee compatibility with every Pokémon.</p>
+    </section>
+    <section class="note-card">
+      <h3>DLC content</h3>
+      <p>Mega Dimension content is kept in Phase 8. DLC Pokémon, forms, stones, orbs, and TMs should only be added after their corresponding mission or reward becomes available.</p>
+    </section>
+    <section class="note-card">
+      <h3>Verification status</h3>
+      <p>Some encounter, held-item, Mega Stone, move, and DLC details remain under verification. Check the audit status in the data file before treating an entry as final.</p>
+    </section>
+  `;
+}
+
+async function init() {
+  try {
+    const response = await fetch(DATA_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Could not load data.json (${response.status})`);
+
+    DATA = await response.json();
+
+    renderPhases();
+    renderTMCatalogue();
+    renderResearchRewards();
+    renderChecks();
+    renderGuideNotes();
+
+    wireTabs();
+    wireTMControls();
+    wireProgressControls();
+
+    const year = $("#footerYear");
+    if (year) year.textContent = new Date().getFullYear();
+  } catch (error) {
+    console.error(error);
+    const root = $("#appError");
+    if (root) {
+      root.hidden = false;
+      root.textContent = `The roadmap could not load. Check that data.json is valid JSON and is in the same folder as app.js. Details: ${error.message}`;
+    }
+  }
+}
+
+document.addEventListener("DOMContentLoaded", init);
