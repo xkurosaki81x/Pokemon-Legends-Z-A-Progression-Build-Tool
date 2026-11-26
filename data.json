@@ -1,4 +1,30 @@
 {
+  "audit": {
+    "encounter_and_evolution_timing": {
+      "status": "Cross-checked",
+      "notes": "Pokémon are introduced according to their earliest verified encounter and evolution availability. Do not display a final evolution before its level or evolution condition is met."
+    },
+    "mega_stone_availability": {
+      "status": "Cross-checked",
+      "notes": "Mega Stones and special transformation items are assigned only after their corresponding story, side mission, or encounter unlock."
+    },
+    "held_item_sources": {
+      "status": "Cross-checked",
+      "notes": "Temporary held items use identified sources. Unique rewards must not be assigned to multiple Pokémon simultaneously. Mega Stones and Primal Orbs occupy the held-item slot."
+    },
+    "main_game_move_progression": {
+      "status": "Needs full per-phase mapping",
+      "notes": "This revision adds specific level-up, evolution, and available move recommendations by phase. Further refinement can incorporate every move source and exact acquisition timing."
+    },
+    "every_tm_earliest_acquisition_and_compatibility": {
+      "status": "Needs full per-move mapping",
+      "notes": "The exhaustive TM reference is intentionally pending. Each TM still needs its earliest acquisition condition and compatibility cross-check against every recommended Pokémon."
+    },
+    "dlc_endgame_roster_and_mission_sequence": {
+      "status": "Cross-checked",
+      "notes": "The DLC roster is introduced progressively. Hyperspace Missions 12 to 14 are postgame content, and Mega Lucario Z is tied to Side Mission 197."
+    }
+  },
   "images": {
     "Totodile": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/158.png",
     "Croconaw": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/159.png",
@@ -20,254 +46,339 @@
     "Flaaffy": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/180.png",
     "Ampharos": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/181.png",
     "Fletchling": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/661.png",
-    "Xerneas": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/716.png"
+    "Xerneas": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/716.png",
+    "Kyogre": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/382.png",
+    "Groudon": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/383.png",
+    "Rayquaza": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/384.png",
+    "Mewtwo": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/150.png",
+    "Darkrai": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/491.png"
   },
   "phases": [
     {
-      "name": "Phase 1 \u00b7 Missions 1\u20135",
-      "goal": "Establish the starter and early utility team.",
-      "research": "Set a realistic target from tasks actually unlocked; do not treat Research Level 14 as mandatory here.",
+      "name": "Phase 1 · Missions 1–5",
+      "goal": "Establish the starter and early utility Pokémon without assuming access to later zones or research rewards.",
+      "research": "Research Level is a flexible target. Complete the requests and research tasks actually unlocked at this point. Do not require Level 14 in this phase.",
       "rows": [
         [
-          "Totodile \u2192 Croconaw",
-          "Starter; evolve at the normal level threshold.",
-          "Use the strongest available Water STAB, plus current level-up coverage; update after evolution.",
-          "Learned naturally; check the in-game move list when available.",
+          "Totodile",
+          "Choose as the starter Pokémon.",
+          "Water Gun (Lv6) / Bite (Lv10). Add Bubble Beam at Lv15 when reached.",
+          "Natural level-up progression. Do not assume later TMs are already available.",
           "Quick Claw (temporary)",
-          "One gift from the woman at the stall southeast of Vert Sector 2; only one confirmed copy."
+          "Gift from the woman at the stall southeast of Vert Sector 2. One confirmed copy; prioritize the active lead."
         ],
         [
           "Fletchling",
-          "Early Wild Zone encounter, when its zone is unlocked.",
-          "Use current Flying/Fire-capable level-up moves; do not spend scarce TMs yet.",
-          "Level-up moves; replace as better moves unlock.",
+          "Catch in an accessible early Wild Zone when available.",
+          "Peck / Quick Attack (Lv8) / Ember (Lv12).",
+          "Natural level-up progression. Feather Dance at Lv16 is a later upgrade.",
           "No dedicated item",
-          "Leave the slot open; transfer the single Quick Claw to the active lead if useful."
+          "Keep the slot open or use an available temporary item. Do not duplicate the Quick Claw."
         ]
       ]
     },
     {
-      "name": "Phase 2 \u00b7 Missions 6\u201310",
-      "goal": "Build toward the long-term six while the story opens more zones.",
-      "research": "Aim for the highest level supported by currently available task categories; Level 14 is a bonus, not a gate.",
+      "name": "Phase 2 · Missions 6–10",
+      "goal": "Expand the team as additional Wild Zones become accessible and prepare the starter and early captures for their next evolutions.",
+      "research": "Aim for the highest Research Level supported by currently unlocked task categories. Level 14 is optional, not a phase requirement.",
       "rows": [
         [
-          "Croconaw / Feraligatr",
-          "Continue the starter line; evolve when eligible.",
-          "Water STAB + best currently learned physical coverage.",
-          "Level-up; use available TMs only when unlocked.",
+          "Croconaw",
+          "Totodile evolves at Level 18.",
+          "Water Gun / Bite / Bubble Beam (Lv15) / Slash (on evolution).",
+          "Level-up and evolution moves. Aqua Jet becomes available at Lv21.",
           "Oran Berry (temporary)",
-          "Side Mission 20: Berry Clever Plan; reward is Oran Berry \u00d710."
+          "Side Mission 20: Berry Clever Plan. Reward includes Oran Berry ×10."
         ],
         [
-          "Ralts \u2192 Kirlia",
-          "Catch when its encounter area becomes accessible.",
-          "Use current Psychic/Fairy-compatible level-up moves; avoid endgame TM assumptions.",
-          "Level-up; review moves after evolution.",
+          "Ralts → Kirlia",
+          "Catch Ralts when its encounter area becomes accessible. Evolves at Level 20.",
+          "Confusion (Lv6) / Draining Kiss (Lv12) / Psybeam (Lv18) / Magical Leaf (Lv20).",
+          "Natural level-up progression. Review moves after evolution.",
           "Wise Glasses (temporary)",
-          "Side Mission 21: Spewpa in Museum; one copy."
+          "Side Mission 21: Spewpa in Museum. One confirmed copy."
         ],
         [
           "Houndour",
           "Catch when its encounter area becomes accessible.",
-          "Use current Dark/Fire level-up moves.",
-          "Level-up; replace as better options unlock.",
+          "Ember / Roar (Lv13) / Bite (Lv16) / Take Down (Lv24).",
+          "Natural level-up progression. Do not assign Houndoom-only Snarl to Houndour.",
           "Oran Berry (temporary)",
-          "Move one of the Side Mission 20 berries here if needed."
+          "Use another berry from the Side Mission 20 reward if available."
+        ],
+        [
+          "Drilbur",
+          "Catch when Wild Zone 9 becomes accessible after Main Mission 9.",
+          "Mud Shot / Metal Claw (Lv7) / Sand Tomb (Lv13) / Bulldoze (Lv18).",
+          "Natural level-up progression. Dig becomes available at Lv28.",
+          "Soft Sand (temporary)",
+          "Side Mission 23: Underneath the Holovator. Use when obtained."
         ]
       ]
     },
     {
-      "name": "Phase 3 \u00b7 Missions 11\u201318",
-      "goal": "Add the main Mega-focused core and improve move coverage.",
-      "research": "Use the Mable reward track as an unlock list; claim each level only when earned.",
+      "name": "Phase 3 · Missions 11–18",
+      "goal": "Develop the main battle core and add the Pokémon needed for later Mega-focused progression.",
+      "research": "Use Mable's Research reward track as an unlock list. Claim rewards only when the corresponding level is actually reached.",
       "rows": [
         [
           "Feraligatr",
-          "Starter line; evolve to final form when eligible.",
-          "Liquidation / Waterfall when obtainable; pair with strongest available coverage.",
-          "TM or move source as listed in-game; Waterfall is not assumed to be a level-up move.",
+          "Croconaw evolves at Level 30.",
+          "Water STAB / Crunch (on evolution) / Breaking Swipe (Lv26) / strongest currently available coverage.",
+          "Crunch is an evolution move. Liquidation is a natural Lv40 move, not an early-phase assumption.",
           "Feraligite (when acquired)",
-          "Mega Stone acquisition is story/progression-gated; replaces any held item."
+          "Use only after obtaining the Mega Stone. It replaces any other held item."
         ],
         [
           "Gardevoir",
-          "Evolve Kirlia when eligible.",
-          "Best available Psychic and Fairy STAB plus coverage.",
-          "Level-up/TM availability; upgrade by phase.",
+          "Kirlia evolves at Level 30.",
+          "Dazzling Gleam (on evolution) / Calm Mind (Lv35) when reached / strongest available Psychic move.",
+          "Dazzling Gleam is learned on evolution. Psychic is learned at Lv38.",
           "Wise Glasses (temporary)",
-          "Side Mission 21 reward; replace with Gardevoirite when acquired."
+          "Side Mission 21 reward. Replace with Gardevoirite once acquired."
         ],
         [
           "Lucario",
-          "Riolu becomes available through its relevant encounter/request; evolve by friendship when eligible.",
-          "Best available Fighting and Steel STAB plus coverage.",
-          "Level-up/TM availability; upgrade by phase.",
+          "Catch Riolu when its encounter or request becomes available. Evolve through friendship.",
+          "Metal Claw (Lv8) / Work Up (Lv16) / Aura Sphere (Lucario Lv25) / Bulldoze (Lv28).",
+          "Aura Sphere belongs to Lucario, not Riolu. Use the move reminder for eligible moves when needed.",
           "Soothe Bell (temporary)",
-          "Side Mission 36 reward when unlocked; useful during friendship evolution."
+          "Side Mission 36 reward when unlocked. Useful while building friendship."
         ],
         [
-          "Houndour \u2192 Houndoom",
-          "Evolve when eligible.",
-          "Fire/Dark STAB plus current coverage.",
-          "Level-up/TM availability.",
+          "Houndour → Houndoom",
+          "Houndour evolves at Level 24.",
+          "Fire Fang (Lv28) / Dark Pulse (Houndoom Lv34) / strongest available Dark and Fire STAB.",
+          "Snarl is a Houndoom level-up move, not a Houndour Lv21 move. Flamethrower is learned at Lv44.",
           "Oran Berry (temporary)",
-          "Side Mission 20 reward; later replace with Houndoominite when acquired."
+          "Side Mission 20 reward. Replace with Houndoominite when acquired."
         ]
       ]
     },
     {
-      "name": "Phase 4 \u00b7 Missions 19\u201324",
-      "goal": "Complete the core roster and prepare for later Mega encounters.",
-      "research": "Do not force a level target; prioritize newly available research categories and mission rewards.",
+      "name": "Phase 4 · Missions 19–24",
+      "goal": "Complete the Ground and Steel role and upgrade the existing core with moves that are genuinely available by this point.",
+      "research": "Do not force a fixed Research Level. Prioritize newly unlocked research categories, requests, and mission rewards.",
       "rows": [
         [
           "Excadrill",
-          "Catch Drilbur when its encounter area is unlocked; evolve at the normal level threshold.",
-          "Ground/Steel STAB + best available coverage.",
-          "Level-up/TM availability; avoid listing Earthquake before its unlock.",
+          "Evolve the Drilbur obtained earlier when it reaches Level 31.",
+          "Dig (Lv28) / Rock Slide (Lv32) / Swords Dance (Lv36) / Drill Run (Lv40).",
+          "Natural level-up progression. Earthquake is learned at Lv46 or can be taught by TM069 after Research Level 34.",
           "Soft Sand (temporary)",
-          "Side Mission 23: Underneath the Holovator."
+          "Side Mission 23: Underneath the Holovator. Replace only if a more suitable confirmed item is available."
+        ],
+        [
+          "Gardevoir",
+          "Continue the established Kirlia evolution line.",
+          "Dazzling Gleam / Psychic (Lv38 when reached) / Calm Mind (Lv35 when reached) / available coverage.",
+          "Natural level-up and evolution moves. TM options must be checked against actual Research Level and TM compatibility.",
+          "Twisted Spoon (temporary)",
+          "Side Mission 35 reward when available. Replace with Gardevoirite when acquired."
+        ],
+        [
+          "Lucario",
+          "Continue the established Riolu evolution line.",
+          "Aura Sphere (Lv25) / Bulldoze (Lv28) / Metal Sound (Lv32, move reminder) / Swords Dance (Lv35).",
+          "Lucario level-up and reminder moves. Close Combat is learned at Lv54.",
+          "Black Belt (if acquired)",
+          "Side Mission 58 reward. Otherwise retain Soothe Bell or another available item."
+        ],
+        [
+          "Feraligatr",
+          "Continue the starter line.",
+          "Crunch / Aqua Jet (Lv21) / Breaking Swipe (Lv26) / strongest available Water move.",
+          "Crunch is learned on evolution. Liquidation is not available naturally until Lv40.",
+          "Feraligite (when acquired)",
+          "Mega Stone replaces all other held items."
+        ]
+      ]
+    },
+    {
+      "name": "Phase 5 · Missions 25–31",
+      "goal": "Add the Dragon line and prepare the team for the late main-game battles.",
+      "research": "Use earned Mable Research levels for their actual TM rewards. Do not assume later research rewards are available early.",
+      "rows": [
+        [
+          "Dratini → Dragonair",
+          "Catch Dratini when its encounter area is accessible. Evolves into Dragonair at Level 30.",
+          "Twister (Lv5) / Thunder Wave (Lv10) / Breaking Swipe (Lv20) / Dragon Rush (Lv30).",
+          "Natural level-up progression. Do not list Dragonite-only evolution moves before Dragonite is obtained.",
+          "Dragon Fang (temporary)",
+          "Use only once obtained. Do not assume a Mega Stone for this line."
+        ],
+        [
+          "Feraligatr",
+          "Keep as the primary Water attacker.",
+          "Crunch / Aqua Jet / Liquidation (Lv40 when reached) / Ice Fang if available.",
+          "Liquidation is learned naturally at Lv40. TM076 Liquidation is an alternative after Wild Zone 16 opens following Mission 24.",
+          "Feraligite",
+          "Mega Stone; occupies the held-item slot."
         ],
         [
           "Gardevoir",
           "Continue the established line.",
-          "Psychic/Fairy STAB + coverage available by this phase.",
-          "Upgrade only to moves currently obtainable.",
-          "Twisted Spoon (temporary)",
-          "Side Mission 35 reward when available; later replace with Gardevoirite."
+          "Psychic (Lv38) / Dazzling Gleam / Mystical Fire (Lv44 when reached) / Calm Mind.",
+          "Natural level-up and evolution moves. Mystical Fire is not assumed before its level requirement.",
+          "Gardevoirite",
+          "Use once acquired; otherwise retain Wise Glasses or Twisted Spoon."
         ],
         [
           "Lucario",
           "Continue the established line.",
-          "Fighting/Steel STAB + coverage available by this phase.",
-          "Upgrade only to moves currently obtainable.",
-          "Black Belt (if acquired)",
-          "Side Mission 58 reward; otherwise keep Soothe Bell or another available item."
+          "Aura Sphere / Swords Dance / Dragon Pulse (Lv38) / strongest available Steel move.",
+          "Natural level-up and reminder moves. Do not assign Close Combat before its Lv54 requirement.",
+          "Lucarionite",
+          "Use once acquired; otherwise retain an appropriate temporary item."
         ]
       ]
     },
     {
-      "name": "Phase 5 \u00b7 Missions 25\u201331",
-      "goal": "Add late-game power and refine the team for major battles.",
-      "research": "Use earned Mable levels for the newly awarded TMs; do not assume later research rewards early.",
-      "rows": [
-        [
-          "Dragonite",
-          "Catch Dratini when its area is accessible; evolve through Dragonair to Dragonite.",
-          "Dragon STAB + Flying/coverage moves actually unlocked by this point; no assumed Dragon Dance.",
-          "Level-up/TM; verify the current move tutor/TM source before changing.",
-          "Dragon Fang (temporary)",
-          "Use only once obtained; Dragoninite/Mega Stone replaces it if applicable."
-        ],
-        [
-          "Feraligatr",
-          "Keep as the Water attacker unless a later special Pok\u00e9mon better fits the team.",
-          "Liquidation / Waterfall + strongest unlocked coverage.",
-          "TM/move source; Waterfall not treated as a level-up move.",
-          "Feraligite",
-          "Mega Stone; occupies the held-item slot."
-        ]
-      ]
-    },
-    {
-      "name": "Phase 6 \u00b7 Missions 32\u201337",
-      "goal": "Finish the main-story roster and prepare for the finale.",
-      "research": "Claim the highest level reached naturally; late rewards include high-impact TMs, but only after their thresholds.",
+      "name": "Phase 6 · Missions 32–37",
+      "goal": "Complete the main-story battle roster with the strongest practical moves available before the postgame.",
+      "research": "Claim the highest Research Level reached naturally. High-level TMs have explicit thresholds; do not assume Level 50 is already achieved.",
       "rows": [
         [
           "Feraligatr",
-          "Keep or Mega Evolve for the Water role.",
-          "Liquidation / Waterfall + best unlocked coverage.",
-          "TM/move source; use the in-game compatibility check.",
+          "Keep as the Water attacker. Mega Evolve when appropriate.",
+          "Liquidation / Crunch / Ice Fang / Rock Slide.",
+          "Liquidation is available by Lv40 or TM076 after Wild Zone 16 opens. Check TM compatibility and actual unlocks for the other moves.",
           "Feraligite",
           "Mega Stone; replaces all other held items."
         ],
         [
           "Gardevoir",
-          "Keep or Mega Evolve for Psychic/Fairy role.",
-          "Best available Psychic/Fairy STAB + coverage.",
-          "TM/move source; use the in-game compatibility check.",
+          "Keep as the Psychic and Fairy special attacker. Mega Evolve when appropriate.",
+          "Psychic / Moonblast / Mystical Fire / Calm Mind.",
+          "Psychic Lv38, Mystical Fire Lv44, and the other moves through verified level-up, evolution, or compatible TM sources.",
           "Gardevoirite",
-          "Mega Stone; replaces Wise Glasses/Twisted Spoon."
+          "Mega Stone; replaces Wise Glasses or Twisted Spoon."
         ],
         [
           "Lucario",
-          "Keep or Mega Evolve for Fighting/Steel role.",
-          "Best available Fighting/Steel STAB + coverage.",
-          "TM/move source; use the in-game compatibility check.",
+          "Keep as the Fighting and Steel attacker. Mega Evolve when appropriate.",
+          "Close Combat / Bullet Punch / Extreme Speed / Swords Dance.",
+          "Close Combat is learned at Lv54 and Extreme Speed at Lv45. Verify the move reminder for eligible moves.",
           "Lucarionite",
-          "Mega Stone; replaces Soothe Bell/Black Belt."
+          "Mega Stone; replaces Soothe Bell or Black Belt."
         ],
         [
           "Excadrill",
-          "Keep for Ground/Steel coverage.",
-          "Ground/Steel STAB + coverage; Earthquake only once unlocked.",
-          "TM/move source; use the in-game compatibility check.",
-          "Soft Sand / Excadrite",
-          "Soft Sand is the temporary option; Mega Stone replaces it if available."
+          "Keep for Ground and Steel coverage.",
+          "Earthquake / Drill Run / Rock Slide / Swords Dance.",
+          "Earthquake is learned at Lv46 or can be taught through TM069 after Research Level 34. Other moves require their level or TM unlock.",
+          "Soft Sand",
+          "Temporary Ground damage item. Do not assume an Excadrill Mega Stone."
         ],
         [
           "Dragonite",
-          "Keep for Dragon/Flying coverage.",
-          "Dragon STAB + coverage; do not assume Dragon Dance is a listed Z-A level-up move.",
-          "TM/move source; use the in-game compatibility check.",
+          "Evolve Dratini through Dragonair at the appropriate levels. Dragonair evolves at Level 55.",
+          "Outrage / Hurricane / Extreme Speed / Dragon Rush.",
+          "Hurricane is learned on Dragonite's evolution. Outrage and Extreme Speed have level-up requirements. Do not list Dragon Dance as a verified Z-A level-up move.",
           "Dragon Fang",
-          "Temporary damage item; Mega Stone replaces it if available."
+          "Temporary Dragon damage item. Do not assign a Mega Stone unless a verified Z-A source is obtained."
         ],
         [
           "Houndoom",
-          "Keep for Fire/Dark coverage or replace if a better special option suits the matchup.",
-          "Fire/Dark STAB + coverage.",
-          "TM/move source; use the in-game compatibility check.",
-          "Wise Glasses / Houndoominite",
-          "Wise Glasses is temporary; Mega Stone replaces it."
+          "Keep for Fire and Dark coverage.",
+          "Dark Pulse / Flamethrower / Overheat / Nasty Plot.",
+          "Dark Pulse Lv34, Flamethrower Lv44, Overheat Lv55, and Nasty Plot through its verified level-up progression.",
+          "Houndoominite",
+          "Mega Stone; replaces Wise Glasses or any other held item."
         ]
       ]
     },
     {
-      "name": "Phase 7 \u00b7 Postgame \u00b7 Missions 38\u201342",
-      "goal": "Complete postgame content and add special encounters.",
-      "research": "Continue toward Research Level 50 for the final research rewards; this is a completion goal, not a story-phase gate.",
+      "name": "Phase 7 · Postgame · Missions 38–42",
+      "goal": "Complete postgame content, claim available special encounters, and prepare for Mega Dimension.",
+      "research": "Continue toward the final Mable Research rewards. Research Level 50 is a completion objective, not a mandatory story-phase gate.",
       "rows": [
         [
           "Xerneas (special)",
-          "Mystery Gift: CELEBRATE30TH; claim after Mystery Gift becomes available.",
-          "Use its strongest legal Fairy coverage and role-specific moves.",
-          "Check its in-game learnset and TM compatibility.",
-          "Appropriate damage/utility item",
-          "Use an available item; a Mega Stone is not assumed."
+          "Mystery Gift password: CELEBRATE30TH. Claim while the distribution is active and Mystery Gift is accessible.",
+          "Geomancy / Moonblast / Thunderbolt / Focus Blast.",
+          "Moves are supplied with the special Level 100 Mystery Gift Xerneas. Retain its supplied moves unless a deliberate replacement is preferred.",
+          "Appropriate damage or utility item",
+          "Use a confirmed available item. Xerneas does not use a Mega Stone in this recommendation."
         ],
         [
-          "Core team",
-          "Retain or replace members based on matchups and Mega Stone access.",
-          "Finalize moves from unlocked TMs and verified compatibility.",
-          "Use in-game compatibility and move relearners.",
-          "Mega Stones",
-          "Mega Stone occupies the held-item slot; a Pok\u00e9mon cannot hold a Mega Stone and another item simultaneously."
+          "Main-game core",
+          "Retain Feraligatr, Gardevoir, Lucario, Excadrill, Dragonite, and Houndoom according to matchup needs.",
+          "Use the Phase 6 movesets as the baseline and upgrade only with confirmed level-up, reminder, or compatible TM moves.",
+          "Confirm the exact TM acquisition and compatibility before assigning any TM-only move.",
+          "Available Mega Stones",
+          "A Mega Stone occupies the held-item slot. A Pokémon cannot hold a Mega Stone and a second item simultaneously."
+        ],
+        [
+          "Mega Dimension preparation",
+          "DLC content becomes available after completing the required main-game progression and starting the DLC request.",
+          "Keep the strongest main-game movesets while preparing for Hyperspace battles.",
+          "DLC-exclusive moves and TMs should be added only after their actual unlock and compatibility are confirmed.",
+          "Best available temporary items",
+          "Do not allocate DLC Mega Stones before their corresponding Hyperspace mission or side mission reward."
         ]
       ]
     },
     {
-      "name": "Phase 8 \u00b7 Mega Dimension DLC",
-      "goal": "Complete DLC story, special encounters, and final team optimization.",
-      "research": "DLC adds further research/task opportunities; use the in-game task list rather than assuming a fixed phase-end level.",
+      "name": "Phase 8 · Mega Dimension DLC",
+      "goal": "Progress through the DLC in its actual encounter order and build toward the intended six-Pokémon endgame roster.",
+      "research": "Use the DLC research and Hyperspace task list as it becomes available. Do not assume every DLC encounter is available at the start of Phase 8.",
       "rows": [
         [
-          "DLC additions / special Pok\u00e9mon",
-          "Recruit at the earliest point their DLC missions and encounter conditions allow.",
-          "Use only moves verified for that species in Z-A; build around its role and available Mega form.",
-          "Check move compatibility in-game before committing TMs.",
-          "Species-specific item / Mega Stone",
-          "Mega Stone replaces any other held item; otherwise use the best confirmed item already collected."
+          "Darkrai → Mega Darkrai",
+          "Catch during Hyperspace Mission 11: Hyperspace Lumiose Survey No. 6.",
+          "Use Darkrai's verified Z-A level-up and compatible TM moves. Build around its special attacking role.",
+          "Confirm each move in the in-game move menu. Do not assume its final moveset before the encounter.",
+          "Darkranite",
+          "Obtained after the Rogue Mega Darkrai encounter in Hyperspace Mission 11."
         ],
         [
-          "Final team",
-          "Choose six based on encounter availability, type coverage, and Mega options.",
-          "Final movesets should use verified Z-A learnsets and DLC unlocks.",
-          "Confirm every move in the in-game move menu.",
-          "Best available held item",
-          "Do not duplicate unique gifts or assign one held item to multiple Pok\u00e9mon."
+          "Primal Groudon",
+          "Catch during Hyperspace Mission 13: A Ruby-Red Legend.",
+          "Use its verified Ground and Fire coverage, prioritizing compatible high-power moves.",
+          "Confirm move access and TM compatibility after catching Groudon.",
+          "Red Orb",
+          "Obtained through Hyperspace Mission 13. The Orb enables its Primal Reversion."
+        ],
+        [
+          "Primal Kyogre",
+          "Catch during Hyperspace Mission 14: A Sapphire-Blue Legend.",
+          "Use its verified Water special-attacking moves and compatible coverage.",
+          "Confirm move access and TM compatibility after catching Kyogre.",
+          "Blue Orb",
+          "Obtained through Hyperspace Mission 14. The Orb enables its Primal Reversion."
+        ],
+        [
+          "Mega Rayquaza",
+          "Catch during Hyperspace Mission 12: The Greatest Gift, after completing Hyperspace Missions 13 and 14.",
+          "Use its verified Dragon and Flying moves and compatible coverage.",
+          "Confirm its available moves after catching it. Do not assume the encounter is available before the Groudon and Kyogre missions are completed.",
+          "No separate Mega Stone",
+          "Mega Rayquaza's Mega Evolution uses its special move requirement rather than a held Mega Stone."
+        ],
+        [
+          "Mega Lucario Z",
+          "Use the established Lucario and complete Side Mission 197: Ultra-Hardcore Lucario Showdown!",
+          "Retain a strong Fighting and Steel moveset, then optimize for the Z Mega form.",
+          "Use verified Lucario level-up, move reminder, and compatible TM options.",
+          "Lucarionite Z",
+          "Reward for completing Side Mission 197. This is separate from the standard Lucarionite."
+        ],
+        [
+          "Mega Mewtwo Y",
+          "Obtain Mewtwo through the Project M special side mission after the required DLC and postgame progression.",
+          "Use its verified Psychic special-attacking moves and compatible coverage.",
+          "Confirm the available moves after obtaining Mewtwo. Do not assume it is available at the start of the DLC.",
+          "Mewtwonite Y",
+          "Use the Mega Stone associated with the Project M reward sequence once obtained."
+        ],
+        [
+          "Final six-Pokémon roster",
+          "Primal Kyogre / Mega Mewtwo Y / Mega Lucario Z / Mega Rayquaza / Primal Groudon / Mega Darkrai.",
+          "Optimize each moveset using verified Z-A level-up moves, move reminders, and compatible base-game or DLC TMs.",
+          "The final TM-by-TM reference must be completed before treating every recommended move as an acquisition-ready instruction.",
+          "Species-specific transformation item",
+          "Use Blue Orb, Mewtwonite Y, Lucarionite Z, Rayquaza's special Mega requirement, Red Orb, and Darkranite as appropriate. Do not assign a second held item."
         ]
       ]
     }
