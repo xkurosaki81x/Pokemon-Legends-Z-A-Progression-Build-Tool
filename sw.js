@@ -1,4 +1,5 @@
 const CACHE = "za-companion-v3";
+
 const CORE = [
   "./",
   "./index.html",
@@ -8,13 +9,42 @@ const CORE = [
   "./icon-192.png",
   "./icon-512.png"
 ];
-self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
-self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
-self.addEventListener("fetch",e=>{
- const u=new URL(e.request.url);
- if(e.request.method!=="GET")return;
- e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{
-   if(res && (res.ok || res.type==="opaque")){const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));}
-   return res;
- }).catch(()=>caches.match(e.request))));
+
+self.addEventListener("install", event => {
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => cache.addAll(CORE))
+      .then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(key => key !== CACHE)
+          .map(key => caches.delete(key))
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+
+      return fetch(event.request).then(response => {
+        if (response && (response.ok || response.type === "opaque")) {
+          const copy = response.clone();
+          caches.open(CACHE).then(cache =>
+            cache.put(event.request, copy)
+          );
+        }
+        return response;
+      });
+    })
+  );
 });
