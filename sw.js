@@ -1,5 +1,13 @@
-const CACHE="za-companion-v1";
-const CORE=["./","./index.html","./app.js","./data.json","./manifest.webmanifest"];
+
+const CACHE = "za-companion-v2";
+const CORE = [
+  "./",
+  "./index.html",
+  "./app.js",
+  "./data.json",
+  "./manifest.webmanifest",
+  "./icon.svg"
+];
 self.addEventListener("install",e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",e=>e.waitUntil(self.clients.claim()));
 self.addEventListener("fetch",e=>{
